@@ -4,10 +4,13 @@ import argparse
 import csv
 import json
 import logging
+import os
 import pickle
 import random
 from dataclasses import dataclass
 from pathlib import Path
+
+os.environ.setdefault("MPLBACKEND", "Agg")
 
 import matplotlib
 import timm
@@ -16,8 +19,6 @@ from PIL import Image
 from torch import nn
 from torch.utils.data import DataLoader, Dataset, random_split
 from timm.data import create_transform, resolve_model_data_config
-
-
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
