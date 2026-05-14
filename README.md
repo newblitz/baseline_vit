@@ -8,8 +8,23 @@ Train a pretrained TinyViT image classifier from the provided PKL split files.
 uv run python train_swin_tiny.py --epochs 50
 ```
 
-The script expects the image paths referenced in `cpsmi2025_train_list.pkl` and `cpsmi2025_test_list.pkl` to exist under the workspace, for example:
+Default PKLs:
 
-- `dataset/cpsmi2025/lesion/low_grade/low_grade128.jpg`
-- `dataset/cpsmi2025/normal/squamous/squamous236.jpg`
-- `dataset/cpsmi2025/cancer/invasive/invasive254.jpg`
+- cpsmi2025_train_list.pkl
+- cpsmi2025_test_list.pkl
+
+## Kaggle Path Changes
+
+If your PKL stores paths like dataset/cpsmi2025/... but Kaggle mounts files at /kaggle/input/<dataset-name>/..., use path remapping:
+
+```bash
+uv run python train_swin_tiny.py \
+  --train-pkl cpsmi2025_train_list.pkl \
+  --test-pkl cpsmi2025_test_list.pkl \
+  --data-root /kaggle/input \
+  --path-replace-from dataset/ \
+  --path-replace-to "" \
+  --epochs 50
+```
+
+If your PKL paths are already absolute or already correct for Kaggle, only set --train-pkl/--test-pkl and optionally --data-root.

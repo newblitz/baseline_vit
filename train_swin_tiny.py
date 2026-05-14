@@ -29,9 +29,18 @@ class Sample:
 
 
 class PklImageDataset(Dataset):
-    def __init__(self, records: list[dict], root_dir: Path, transform=None):
+    def __init__(
+        self,
+        records: list[dict],
+        root_dir: Path,
+        transform=None,
+        path_replace_from: str = "",
+        path_replace_to: str = "",
+    ):
         self.root_dir = root_dir
         self.transform = transform
+        self.path_replace_from = path_replace_from
+        self.path_replace_to = path_replace_to
         self.samples: list[Sample] = []
         missing_paths: list[str] = []
 
@@ -41,7 +50,11 @@ class PklImageDataset(Dataset):
                     f"Record {index} must contain 'img_root' and 'label' keys. Got: {sorted(record.keys())}"
                 )
 
-            image_path = Path(record["img_root"])
+            raw_image_path = str(record["img_root"])
+            if self.path_replace_from and raw_image_path.startswith(self.path_replace_from):
+                raw_image_path = self.path_replace_to + raw_image_path[len(self.path_replace_from) :]
+
+            image_path = Path(raw_image_path)
             if not image_path.is_absolute():
                 image_path = (root_dir / image_path).resolve()
             label = int(record["label"])
@@ -149,9 +162,23 @@ def make_dataloaders(
     val_split: float,
     num_workers: int,
     seed: int,
+    path_replace_from: str,
+    path_replace_to: str,
 ):
-    full_train_dataset = PklImageDataset(train_records, root_dir=root_dir, transform=train_transform)
-    test_dataset = PklImageDataset(test_records, root_dir=root_dir, transform=eval_transform)
+    full_train_dataset = PklImageDataset(
+        train_records,
+        root_dir=root_dir,
+        transform=train_transform,
+        path_replace_from=path_replace_from,
+        path_replace_to=path_replace_to,
+    )
+    test_dataset = PklImageDataset(
+        test_records,
+        root_dir=root_dir,
+        transform=eval_transform,
+        path_replace_from=path_replace_from,
+        path_replace_to=path_replace_to,
+    )
 
     if not 0.0 <= val_split < 1.0:
         raise ValueError("val_split must be in the range [0.0, 1.0)")
@@ -208,6 +235,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/tiny_vit_5m"))
     parser.add_argument("--model-name", type=str, default="tiny_vit_5m_224")
     parser.add_argument("--num-classes", type=int, default=4)
+    parser.add_argument("--path-replace-from", type=str, default="")
+    parser.add_argument("--path-replace-to", type=str, default="")
     parser.add_argument("--epochs", type=int, default=50)
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--lr", type=float, default=3e-4)
@@ -330,6 +359,8 @@ def main() -> None:
         val_split=args.val_split,
         num_workers=args.num_workers,
         seed=args.seed,
+        path_replace_from=args.path_replace_from,
+        path_replace_to=args.path_replace_to,
     )
 
     device = get_device()
