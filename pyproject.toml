@@ -1,0 +1,25 @@
+[project]
+name = "baseline-diffusion"
+version = "0.1.0"
+description = "TinyViT image classification trainer for PKL-based datasets"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "torch==2.4.1",
+  "torchvision==0.19.1",
+  "pillow",
+  "matplotlib",
+  "timm",
+]
+
+[project.scripts]
+train-swin-tiny = "train_swin_tiny:main"
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch" }
+torchvision = { index = "pytorch" }

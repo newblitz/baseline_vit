@@ -1,0 +1,7 @@
+2026-05-15 01:10:38,309 | Using device: mps
+2026-05-15 01:10:38,310 | Model: tiny_vit_5m_224
+2026-05-15 01:10:38,311 | Model parameters: 5.07M
+2026-05-15 01:10:38,311 | Number of classes: 4
+2026-05-15 01:10:38,311 | Train samples: 8109
+2026-05-15 01:10:38,311 | Validation samples: 901
+2026-05-15 01:10:38,311 | Test samples: 2254
